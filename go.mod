@@ -1,4 +1,4 @@
-module zap-cli
+module github.com/jumas-cola/zap-cli
 
 go 1.21.3
 
