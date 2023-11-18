@@ -4,7 +4,6 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-
     "github.com/jumas-cola/zap-cli/player"
 
 	"github.com/gdamore/tcell/v2"
@@ -137,7 +136,7 @@ func main() {
 			case tcell.Button1, tcell.Button2:
 				for _, b := range btns {
 					if x > b.x1 && x < b.x2 && y > b.y1 && y < b.y2 {
-						play(b.path)
+						player.play(b.path)
 					}
 				}
 			}
