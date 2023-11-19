@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"os"
 	"path/filepath"
@@ -10,7 +11,7 @@ import (
 	"github.com/jumas-cola/zap-cli/ui"
 )
 
-func drawButtons(entries []os.DirEntry, s tcell.Screen, boxStyle tcell.Style) {
+func drawButtons(dir string, entries []os.DirEntry, s tcell.Screen, boxStyle tcell.Style) {
 	s.Clear()
 	width, _ := s.Size()
 	btnsCount := width / 20
@@ -35,7 +36,7 @@ func drawButtons(entries []os.DirEntry, s tcell.Screen, boxStyle tcell.Style) {
 			y1:   startY,
 			x2:   startX + btnWidth - 3,
 			y2:   startY + 3,
-			path: e.Name()}
+			path: filepath.Join(dir, e.Name())}
 		ui.DrawBox(s, currBtn.x1, currBtn.y1, currBtn.x2, currBtn.y2, boxStyle, e.Name())
 		btns = append(btns, currBtn)
 		btnPos = (btnPos + 1) % btnsCount
@@ -45,6 +46,16 @@ func drawButtons(entries []os.DirEntry, s tcell.Screen, boxStyle tcell.Style) {
 	}
 
 	ui.DrawBox(s, 1, startY+5, 18, startY+7, boxStyle, "Press q to quit")
+}
+
+func checkFilesCount(entries []os.DirEntry) int {
+	mp3Count := 0
+	for _, e := range entries {
+		if filepath.Ext(e.Name()) == ".mp3" {
+			mp3Count++
+		}
+	}
+	return mp3Count
 }
 
 var defStyle tcell.Style
@@ -57,9 +68,18 @@ type btn struct {
 var btns []btn
 
 func main() {
-	entries, err := os.ReadDir("./")
+	dir := flag.String("dir", "./", "Directory to scan.")
+	flag.Parse()
+
+	entries, err := os.ReadDir(*dir)
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	mp3Count := checkFilesCount(entries)
+	if mp3Count == 0 {
+		log.Fatal("No .mp3 files in directory")
+		return
 	}
 
 	defStyle := tcell.StyleDefault.Background(tcell.ColorReset).Foreground(tcell.ColorReset)
@@ -77,7 +97,7 @@ func main() {
 	s.EnablePaste()
 	s.Clear()
 
-	drawButtons(entries, s, boxStyle)
+	drawButtons(*dir, entries, s, boxStyle)
 
 	quit := func() {
 		maybePanic := recover()
@@ -95,7 +115,7 @@ func main() {
 
 		switch ev := ev.(type) {
 		case *tcell.EventResize:
-			drawButtons(entries, s, boxStyle)
+			drawButtons(*dir, entries, s, boxStyle)
 			s.Sync()
 		case *tcell.EventKey:
 			if ev.Key() == tcell.KeyEscape || ev.Key() == tcell.KeyCtrlC {

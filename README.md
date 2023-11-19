@@ -2,7 +2,7 @@
 
 ![Screenshot](screen.png)
 
-The CLI app for playing MP3 sounds from the current folder.
+The CLI app for playing MP3 sounds from folder.
 
 ## Build
 
@@ -10,14 +10,13 @@ The CLI app for playing MP3 sounds from the current folder.
 go build zap-cli.go
 ```
 
-## Folder structure and run
+## Usage
 
 ```bash
-$ tree
-.
-├── zap-cli
-├── che-ty-nesesh-to-voobsche.mp3
-├── nu-davaj-rasskazyvaj-davaj.mp3
-└── zelenyi-slonik-zdrastit-zdrastitja.mp3
-$ ./zap-cli
+$ ./zap-cli -h                                                                                                                                      11:04:28
+Usage of ./zap-cli:
+  -dir string
+        Directory to scan. (default "./")
+
+$ ./zap-cli -dir ~/Sounds
 ```
